@@ -9,6 +9,13 @@ describe "AuthenticationPages" do
 
 		it { should have_selector('h1', text: 'Sign in') }
 		it { should have_title('Sign in') }
+
+		describe "when user not signed in" do
+			it { should_not have_link 'Users', href: users_path }
+			it { should_not have_link 'Profile', href: users_path }
+			it { should_not have_link 'Settings' }
+			it { should_not have_link 'Sign out', href: signout_path }
+		end
 	end
 
 	describe "signin" do
@@ -76,6 +83,17 @@ describe "AuthenticationPages" do
 					it "should render the desired protected page" do
 						expect(page).to have_title('Edit user')
 					end
+
+					describe "when signing in again" do
+						before do
+						  delete signout_path
+						  sign_in user
+						end
+
+						it "should render the default (profile) page" do
+							expect(page).to have_title(user.name)
+						end
+					end
 				end
 			end
 
@@ -100,6 +118,23 @@ describe "AuthenticationPages" do
 
 			describe "submitting a PATCH request to the Users#update action" do
 				before { patch user_path(wrong_user) }
+
+				specify { expect(response).to redirect_to(root_url) }
+			end
+		end
+
+		describe "as signed in user" do
+			let(:user) { FactoryGirl.create(:user) }
+			before { sign_in user, no_capybara: true }
+
+			describe "submitting a GET request to the Users#new action" do
+				before { get new_user_path }
+
+				specify { expect(response).to redirect_to(root_url) }
+			end
+
+			describe "submitting a POST request to the Users#create action" do
+				before { post users_path user: user }
 
 				specify { expect(response).to redirect_to(root_url) }
 			end
