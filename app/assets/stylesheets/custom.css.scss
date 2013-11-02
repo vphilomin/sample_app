@@ -167,6 +167,12 @@ aside {
   color: $grayLight;
 }
 
+.countdown {
+  display: inline;
+  padding-left: 10px;
+  color: $grayLight;
+}
+
 /* forms */
 input, textarea, select, .uneditable-input {
   border: 1px solid #bbb;
